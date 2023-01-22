@@ -1,0 +1,9 @@
+Testing strategy
+
+1. By using the white-box testing  strategy, some assert functions were written in the nuclei.c, aiming to ensure the functional functions (e.g., “get words from string”, “find variable or lisp name from stack”) performed as expected.
+
+2. After ensured the functional functions performed well, to avoid the test function too long, a number of new “.ncl” files (e.g., double loops, extension features and some special cases) was added to applying the black-box testing and focus on whether the outputs meet the expectations.
+
+3. Error cases for each function in the program will be saved as error tests and the output is used to determine if they meet expectations and is used to ensure that the error guidance of this function that related to are correct.
+
+4. With all the stage test outputs meeting expectations, I applied Valgrind to the program to perform memory tests and ensure that there were no memory errors in any of the functions and the free function is doing well.
