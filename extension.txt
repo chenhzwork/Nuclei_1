@@ -31,7 +31,9 @@ New grammar (added functions in INTFUNC):
 <BOOLFUNC> ::= "LESS" <LIST> <LIST> | "GREATER" <LIST> <LIST> | "EQUAL" <LIST> <LIST>
 
 <IOFUNC>   ::= <SET> | <PRINT>
+
 <SET>      ::= "SET" <VAR> <LIST>
+
 <PRINT>    ::= "PRINT" <LIST> | "PRINT" <STRING>
 
 # (IF (CONDITION) ((IF-TRUE-INSRCTS)) ((IF_FALSE_INSTRCTS)))

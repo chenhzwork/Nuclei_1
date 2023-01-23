@@ -25,8 +25,8 @@ IRES_EXTENSION := $(NCLS_EXTENSION:.ncl=.ires)
 
 LIBS    := -lm
 
-parse_r: nuclei.c general.c nuclei.h
-	$(CC) nuclei.c general.c $(RELEASE) -o parse $(LIBS)
+parse_: nuclei.c general.c nuclei.h
+	$(CC) nuclei.c general.c $(RELEASE) -o parse_ $(LIBS)
 
 parse_s: nuclei.c general.c nuclei.h
 	$(CC) nuclei.c general.c $(SANI) -o parse_s $(LIBS)
@@ -34,10 +34,10 @@ parse_s: nuclei.c general.c nuclei.h
 parse_v: nuclei.c general.c nuclei.h
 	$(CC) nuclei.c general.c $(VALG) -o parse_v $(LIBS)
 
-all: parse_r parse_s parse_v interp interp_s interp_v
+all: parse_ parse_s parse_v interp interp_s interp_v
 
-interp_r: nuclei.c linked.c general.c nuclei.h lisp.h general.h
-	$(CC) nuclei.c linked.c general.c $(RELEASE) -DINTERP -o interp $(LIBS)
+interp_: nuclei.c linked.c general.c nuclei.h lisp.h general.h
+	$(CC) nuclei.c linked.c general.c $(RELEASE) -DINTERP -o interp_ $(LIBS)
 
 interp_s: nuclei.c linked.c general.c nuclei.h lisp.h general.h
 	$(CC) nuclei.c linked.c general.c $(SANI) -DINTERP -o interp_s $(LIBS)
@@ -45,15 +45,15 @@ interp_s: nuclei.c linked.c general.c nuclei.h lisp.h general.h
 interp_v: nuclei.c linked.c general.c nuclei.h lisp.h general.h
 	$(CC) nuclei.c linked.c general.c $(VALG) -DINTERP -o interp_v $(LIBS)
 
-extension_r: nuclei.c linked.c general.c nuclei.h lisp.h general.h
-	$(CC) nuclei.c linked.c general.c $(RELEASE) -DINTERP -o extension $(LIBS)
+extension_: nuclei.c linked.c general.c nuclei.h lisp.h general.h
+	$(CC) nuclei.c linked.c general.c $(RELEASE) -DINTERP -o extension_ $(LIBS)
 extension_s: nuclei.c linked.c general.c nuclei.h lisp.h general.h
 	$(CC) nuclei.c linked.c general.c $(SANI) -DINTERP -o extension_s $(LIBS)
 extension_v: nuclei.c linked.c general.c nuclei.h lisp.h general.h
 	$(CC) nuclei.c linked.c general.c $(VALG) -DINTERP -o extension_v $(LIBS)
 
-# For all .ncl files, run them and output result to a .pres (prase result) 
-# or .ires (interpretted result) file.
+# For all .ncl files, run them and output result to a .pres (parse result)
+# or .ires (interpreted result) file.
 runall : ./parse_s ./interp_s $(PRES) $(IRES) $(PRES_EXTENSION) $(IRES_EXTENSION)
 
 run_parse: ./parse_s $(PRES)
@@ -62,11 +62,11 @@ run_interp: ./interp_s $(IRES)
 
 run_extension: ./extension_s $(PRES_EXTENSION) $(IRES_EXTENSION)
 
-parse: parse_r parse_s parse_v run_parse
+parse: parse_ parse_s parse_v run_parse
 
-interp: interp_r interp_s interp_v run_interp
+interp: interp_ interp_s interp_v run_interp
 
-extension: parse_s interp_s extension_r extension_s extension_v run_extension
+extension: parse_s interp_s extension_ extension_s extension_v run_extension
 
 %.pres:
 	-./parse_s  $*.ncl > $*.pres 2>&1
@@ -74,5 +74,5 @@ extension: parse_s interp_s extension_r extension_s extension_v run_extension
 	-./interp_s $*.ncl > $*.ires 2>&1
 
 clean:
-	rm -f parse parse_s parse_v interp interp_s interp_v extension extension_s extension_v $(PRES) $(IRES)
+	rm -f parse_ parse_s parse_v interp_ interp_s interp_v extension_ extension_s extension_v $(PRES) $(IRES)
 	rm -f $(PRES_EXTENSION) $(IRES_EXTENSION)

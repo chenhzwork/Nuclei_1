@@ -30,6 +30,34 @@ void get_line(FILE* fp, Program* p){
     }
 }
 
+void is_Single(char word[MAXTOKENSIZE], int* i, char** tmp){
+    word[(*i)++] = **tmp;
+    (*tmp)++;
+    while(**tmp != SINGLE_QUOTE){
+        word[(*i)++] = **tmp;
+        (*tmp)++;
+        if(*i == MAXTOKENSIZE){
+            ERROR("Expecting a correct instruct with single quoted.")
+        }
+    }
+    word[(*i)++] = SINGLE_QUOTE;
+    (*tmp)++;
+}
+
+void is_Double(char word[MAXTOKENSIZE], int* i, char** tmp){
+    word[(*i)++] = **tmp;
+    (*tmp)++;
+    while(**tmp != DOUBLE_QUOTE){
+        word[(*i)++] = **tmp;
+        (*tmp)++;
+        if(*i == MAXTOKENSIZE){
+            ERROR("Expecting a correct string with double quoted.")
+        }
+    }
+    word[(*i)++] = DOUBLE_QUOTE;
+    (*tmp)++;
+}
+
 void get_str(char tmp_line[MAXSTR], Program* p){
     char* tmp = tmp_line;
     if(*tmp == HASHTAG){
@@ -42,24 +70,10 @@ void get_str(char tmp_line[MAXSTR], Program* p){
             tmp++;
         }
         if(*tmp == SINGLE_QUOTE){
-            word[i++] = *tmp;
-            tmp++;
-            while(*tmp != SINGLE_QUOTE){
-                word[i++] = *tmp;
-                tmp++;
-            }
-            word[i++] = SINGLE_QUOTE;
-            tmp++;
+            is_Single(word, &i, &(tmp));
         }
         else if(*tmp == DOUBLE_QUOTE){
-            word[i++] = *tmp;
-            tmp++;
-            while(*tmp != DOUBLE_QUOTE){
-                word[i++] = *tmp;
-                tmp++;
-            }
-            word[i++] = DOUBLE_QUOTE;
-            tmp++;
+            is_Double(word, &i, &(tmp));
         }
         else if(*tmp == LFT_BRKT){
             word[i++] = *tmp;
@@ -294,13 +308,13 @@ void Loop(Program* p){
 #ifdef INTERP
         p->cur_word = tmp_cur_wds;
         } else if (loop_break == ZERO) {        //False condition
-            Loop_false_con(p);
+            Loop_false_con(p);}
 #endif
     } else {
         ERROR("Expecting a LEFT bracket.")
     }
 #ifdef INTERP
-    }}
+    }
 #endif
 }
 
@@ -783,7 +797,7 @@ void String(Program* p){
         return;
     }
     else{
-        ERROR("Expecting a correct string with Double quoted.")
+        ERROR("Expecting a correct string with double quoted.")
     }
 }
 
@@ -1119,7 +1133,8 @@ void test_nuclei(void){
     tst_p_NIL();
 #ifdef INTERP
     tst_find_var_lisp_name_exist();
-    tst_isFrom();
+    tst_isFrom_istmp();
+    tst_stack();
 #endif
 }
 
@@ -1142,7 +1157,7 @@ void tst_find_var_lisp_name_exist(void){
     Prog_free(p);
 }
 
-void tst_isFrom(void){
+void tst_isFrom_istmp(void){
     char tmp[MAX_STR_LEN];
     Program *p = init_Prog();
     strcpy(tmp, "((SET F '(2)')(SET G F))");
@@ -1150,6 +1165,27 @@ void tst_isFrom(void){
     Prog(p);
     vars *g = find_var("G", p);
     assert(g->isFrom == true);
+    int i = ONE;
+    char rdm_name[NAME_SIZE];
+    get_uniq_name(p, rdm_name);
+    push_var(&(p->v), rdm_name, lisp_atom(i));
+    assert(is_tmp(p->v->name) == true);
+    Prog_free(p);
+}
+
+void tst_stack(void){
+    Program *p = init_Prog();
+    lisp* l1 = lisp_fromstring("(1)");
+    push_var(&(p->v), "tst1", l1);
+    assert(p->v != NIL);
+    lisp* l2 = lisp_fromstring("(2)");
+    push_var(&(p->v), "tst2", l2);
+    char tst_str[MAX_STR_LEN];
+    lisp_tostring(peek_var(p->v), tst_str);
+    assert(STRSAME(tst_str, "(2)"));
+    p->v = pop_var(p->v);
+    lisp_tostring(peek_var(p->v), tst_str);
+    assert(STRSAME(tst_str, "(1)"));
     Prog_free(p);
 }
 #endif
@@ -1169,7 +1205,8 @@ void tst_init_Prog(void){
 
 void tst_get_wds_get_c(void){
     Program* p = init_Prog();
-    char tst_str[MAX_STR_LEN] = "(PRINT (CONS '1' (CONS '2' NIL)))";
+    char tst_str[MAX_STR_LEN];
+    strcpy(tst_str, "(PRINT (CONS '1' (CONS '2' NIL)))");
     get_str(tst_str, p);
     p->cur_word = ini_cur_word(p);
     assert(STRSAME(get_p_wds(p), "("));

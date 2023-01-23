@@ -71,7 +71,6 @@ struct prog{
 };
 
 Program* init_Prog(void);
-void test(void);
 void Prog(Program *p);
 void get_line(FILE* fp, Program* p);
 void get_str(char tmp_line[MAXSTR], Program* p);
@@ -110,6 +109,8 @@ void check_invld_wrd(vars* a, char name[NAME_SIZE]);
 void Prog_free(Program* p);
 
 //function parts
+void is_Single(char word[MAXTOKENSIZE], int* i, char** tmp);
+void is_Double(char word[MAXTOKENSIZE], int* i, char** tmp);
 void INTERP_CAR(Program* p);
 void INTERP_CDR(Program* p);
 lisp* INTERP_CONS_1(Program* p);
@@ -146,4 +147,5 @@ void tst_get_wds_get_c(void);
 void tst_init_Prog(void);
 void tst_p_NIL(void);
 void tst_find_var_lisp_name_exist(void);
-void tst_isFrom(void);
+void tst_isFrom_istmp(void);
+void tst_stack(void);
